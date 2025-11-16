@@ -15,7 +15,7 @@ export class User {
   passwordHash: string;
 
   @Prop({ default: false })
-  emailVarified: string;
+  emailVerified: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
