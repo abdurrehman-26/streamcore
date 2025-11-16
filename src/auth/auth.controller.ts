@@ -14,6 +14,9 @@ import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { SignInDTO } from '../auth/dto/signin-dto';
 import { SignUpDTO } from './dto/signup-dto';
+import { EmailVerificationService } from '../email-verification/email-verification.service';
+import { RequestVerificationDto } from './dto/request-verification.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
 type User = {
   id: string;
@@ -26,7 +29,10 @@ interface AuthenticatedRequest extends ExpressRequest {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private verificationService: EmailVerificationService,
+  ) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
@@ -57,5 +63,17 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req: AuthenticatedRequest) {
     return req.user;
+  }
+
+  @Post('request-email-verification')
+  async requestVerification(@Body() dto: RequestVerificationDto) {
+    const code = await this.verificationService.requestCode(dto.email);
+    return { message: 'Verification code sent', debugCode: code }; // remove debugCode in prod
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body() dto: VerifyEmailDto) {
+    await this.verificationService.verifyCode(dto.email, dto.code);
+    return { message: 'Email verified successfully' };
   }
 }

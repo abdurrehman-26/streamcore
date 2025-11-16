@@ -3,6 +3,7 @@ import { AuthController } from './auth.controller';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
+import { EmailVerificationService } from '../email-verification/email-verification.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -27,6 +28,12 @@ describe('AuthController', () => {
         },
         {
           provide: UsersService,
+          useValue: {
+            findOne: jest.fn(),
+          },
+        },
+        {
+          provide: EmailVerificationService,
           useValue: {
             findOne: jest.fn(),
           },
