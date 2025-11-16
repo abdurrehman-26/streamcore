@@ -14,4 +14,10 @@ export class UsersService {
   createUser(name: string, email: string, passwordHash: string) {
     return this.userModel.create({ name, email, passwordHash });
   }
+  async markEmailAsVerified(email: string): Promise<void> {
+    await this.userModel.updateOne(
+      { email },
+      { $set: { emailVerified: true } },
+    );
+  }
 }
