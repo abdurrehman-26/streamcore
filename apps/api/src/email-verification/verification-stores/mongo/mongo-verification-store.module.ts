@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   EmailVerification,
   EmailVerificationSchema,
-} from 'src/schemas/email-verification.schema';
+} from '../../../schemas/email-verification.schema';
 import { MongoVerificationStoreService } from './mongo-verification-store.service';
 
 @Module({

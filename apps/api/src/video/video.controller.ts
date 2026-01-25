@@ -13,7 +13,7 @@ import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import * as Minio from 'minio';
 import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from 'src/types/env';
+import { EnvironmentVariables } from '../types/env';
 
 @Controller('video')
 export class VideoController {
@@ -95,10 +95,7 @@ export class VideoController {
   }
   @Post('webhook')
   async handleWebhook(@Body() body: unknown) {
-    await this.videoQueue.add('process', {
-      name: 'videoProcessingJob',
-      data: body,
-    });
-    return { message: 'webhook received', body };
+    await this.videoQueue.add('process', body);
+    return { message: 'webhook received' };
   }
 }
