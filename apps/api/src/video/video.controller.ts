@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   Post,
   Res,
@@ -17,19 +18,11 @@ import { EnvironmentVariables } from '../types/env';
 
 @Controller('video')
 export class VideoController {
-  private minioClient: Minio.Client;
   constructor(
     @InjectQueue('videoProcessing') private videoQueue: Queue,
+    @Inject('MINIO_CLIENT') private readonly minioClient: Minio.Client,
     private configService: ConfigService<EnvironmentVariables>,
-  ) {
-    this.minioClient = new Minio.Client({
-      endPoint: this.configService.get('MINIO_ENDPOINT') || 'localhost',
-      port: this.configService.get('MINIO_PORT'),
-      useSSL: this.configService.get('MINIO_USE_SSL') === 'true',
-      accessKey: this.configService.get('MINIO_ACCESS_KEY'),
-      secretKey: this.configService.get('MINIO_SECRET_KEY'),
-    });
-  }
+  ) {}
   @HttpCode(HttpStatus.CREATED)
   @Post('upload')
   async uploadVideo() {

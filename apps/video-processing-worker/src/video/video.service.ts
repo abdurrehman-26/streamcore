@@ -1,23 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { FFmpegService } from '../ffmpeg/ffmpeg.service';
 import path from 'path';
 import fs from 'fs';
 import * as Minio from 'minio';
 
-// MinIO client
-const minioClient = new Minio.Client({
-  endPoint: process.env.MINIO_ENDPOINT || 'localhost',
-  port: 9000,
-  useSSL: false,
-  accessKey: process.env.MINIO_ACCESS_KEY || 'LWSSMBY3CHH4WPNH1MBN',
-  secretKey:
-    process.env.MINIO_SECRET_KEY || 'WtWEZQnCKk27SIzqmi8Tj74KoJFvOvzhdVAA1+lK',
-});
-
 @Injectable()
 export class VideoService {
   private readonly logger = new Logger(VideoService.name);
-  constructor(private readonly ffmpegService: FFmpegService) {}
+  constructor(
+    private readonly ffmpegService: FFmpegService,
+    @Inject('MINIO_CLIENT') private readonly minioClient: Minio.Client,
+  ) {}
 
   async processVideo(bucket: string, objectKey: string): Promise<void> {
     const key = decodeURIComponent(objectKey);
@@ -33,7 +26,7 @@ export class VideoService {
     await fs.promises.mkdir(outputFolder, { recursive: true });
 
     // Download raw video to inputPath
-    await minioClient.fGetObject(bucket, key, inputPath);
+    await this.minioClient.fGetObject(bucket, key, inputPath);
 
     // Run FFmpeg -> Generate HLS
     await this.ffmpegService.transcodeToHLS(
@@ -51,7 +44,7 @@ export class VideoService {
       const localFile = path.join(outputFolder, f);
       const remoteKey = `processed/${fileName}/${f}`;
 
-      await minioClient.fPutObject(bucket, remoteKey, localFile);
+      await this.minioClient.fPutObject(bucket, remoteKey, localFile);
       this.logger.log('Uploaded:', remoteKey);
     }
 
