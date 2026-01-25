@@ -12,7 +12,7 @@ import {
 import type { Request as ExpressRequest, Response } from 'express';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
-import { SignInDTO } from '../auth/dto/signin-dto';
+import { SignInDTO } from './dto/signin-dto';
 import { SignUpDTO } from './dto/signup-dto';
 import { EmailVerificationService } from '../email-verification/email-verification.service';
 import { RequestVerificationDto } from './dto/request-verification.dto';

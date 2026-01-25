@@ -13,8 +13,7 @@ import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import * as Minio from 'minio';
 import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from 'src/types/env';
-import type { S3Event } from 'aws-lambda';
+import { EnvironmentVariables } from '../types/env';
 
 @Controller('video')
 export class VideoController {
@@ -95,7 +94,7 @@ export class VideoController {
     }
   }
   @Post('webhook')
-  async handleWebhook(@Body() body: S3Event) {
+  async handleWebhook(@Body() body: unknown) {
     await this.videoQueue.add('process', body);
     return { message: 'webhook received' };
   }
