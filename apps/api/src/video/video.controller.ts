@@ -15,7 +15,16 @@ import { InjectQueue } from '@nestjs/bullmq';
 import * as Minio from 'minio';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from '../types/env';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { PresignedUrlResponseDto } from './dto/responses/generate-presigned-upload.response';
+import { WebhookResponseDto } from './dto/responses/webhook.response.dto';
 
+@ApiTags('Video')
 @Controller('video')
 export class VideoController {
   constructor(
@@ -23,6 +32,15 @@ export class VideoController {
     @Inject('MINIO_CLIENT') private readonly minioClient: Minio.Client,
     private configService: ConfigService<EnvironmentVariables>,
   ) {}
+  @ApiOperation({
+    summary: 'Generate Video Upload URL',
+    description:
+      'Generates a presigned URL for uploading a video file to the storage bucket.',
+  })
+  @ApiCreatedResponse({
+    description: 'Presigned URL generated successfully',
+    type: PresignedUrlResponseDto,
+  })
   @HttpCode(HttpStatus.CREATED)
   @Post('upload')
   async uploadVideo() {
@@ -33,6 +51,30 @@ export class VideoController {
     return { message: 'video upload url generated', url: presignedUrl };
   }
 
+  @ApiOperation({
+    summary: 'Get Video Manifest',
+    description:
+      'Retrieves the HLS manifest for a processed video, replacing segment URLs with presigned URLs for secure access.',
+  })
+  @ApiOkResponse({
+    description: 'HLS Manifest retrieved successfully',
+    content: {
+      'application/vnd.apple.mpegurl': {
+        schema: {
+          type: 'string',
+          example: `#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:10
+#EXTINF:10.0,
+https://example.com/segment0.ts
+#EXTINF:10.0,
+https://example.com/segment1.ts
+#EXT-X-ENDLIST`,
+        },
+      },
+    },
+  })
+  @HttpCode(HttpStatus.OK)
   @Get(':id')
   async getVideo(@Param('id') id: string, @Res() res: Response) {
     const bucket = 'streamcore';
@@ -86,6 +128,16 @@ export class VideoController {
       res.status(404).send('File not found');
     }
   }
+  @ApiOperation({
+    summary: 'Handle Video Processing Webhook',
+    description:
+      'Receives webhook notifications for video processing and enqueues them for further processing.',
+  })
+  @ApiOkResponse({
+    description: 'Webhook received successfully',
+    type: WebhookResponseDto,
+  })
+  @HttpCode(HttpStatus.ACCEPTED)
   @Post('webhook')
   async handleWebhook(@Body() body: unknown) {
     await this.videoQueue.add('process', body);
