@@ -11,7 +11,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Streamcore API Docs')
-    .setDescription('OpenAPI documentation for Stream Core API')
+    .setDescription('OpenAPI documentation for Streamcore API')
     .setVersion('1.0')
     .addGlobalResponse({
       status: 400,

@@ -12,7 +12,7 @@ import {
 import type { Request as ExpressRequest, Response } from 'express';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
-import { SignInDTO } from './dto/requests/login.request.dto';
+import { LogInDTO } from './dto/requests/login.request.dto';
 import { SignUpDTO } from './dto/requests/signup.request.dto';
 import { EmailVerificationService } from '../email-verification/email-verification.service';
 import { RequestVerificationDto } from './dto//requests/request-verification.request.dto';
@@ -77,12 +77,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(
-    @Body() signInDto: SignInDTO,
+    @Body() logInDto: LogInDTO,
     @Res({ passthrough: true }) res: Response,
   ) {
     const loginData = await this.authService.logIn(
-      signInDto.email,
-      signInDto.password,
+      logInDto.email,
+      logInDto.password,
     );
     res.cookie('access_token', loginData.access_token, { httpOnly: true });
     return loginData;
