@@ -42,8 +42,8 @@ export class VideoController {
     type: PresignedUrlResponseDto,
   })
   @HttpCode(HttpStatus.CREATED)
-  @Post('upload')
-  async uploadVideo() {
+  @Post('generate-upload-url')
+  async generateUploadUrl() {
     const presignedUrl = await this.minioClient.presignedPutObject(
       'streamcore',
       `raw/video_${Date.now()}.mp4`,
