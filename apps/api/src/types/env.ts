@@ -9,4 +9,8 @@ export interface EnvironmentVariables {
   MINIO_USE_SSL: string;
   MINIO_ACCESS_KEY: string;
   MINIO_SECRET_KEY: string;
+  REDIS_HOST: string;
+  REDIS_PORT: string;
+  JWT_SECRET: string;
+  JWT_EXPIRES_IN: string;
 }
