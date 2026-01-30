@@ -13,8 +13,6 @@ import type { Response } from 'express';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import * as Minio from 'minio';
-import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from '../types/env';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
@@ -30,7 +28,6 @@ export class VideoController {
   constructor(
     @InjectQueue('videoProcessing') private videoQueue: Queue,
     @Inject('MINIO_CLIENT') private readonly minioClient: Minio.Client,
-    private configService: ConfigService<EnvironmentVariables>,
   ) {}
   @ApiOperation({
     summary: 'Generate Video Upload URL',
