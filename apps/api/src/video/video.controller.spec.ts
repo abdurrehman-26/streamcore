@@ -43,12 +43,23 @@ describe('videoController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should call queue.add correctly', async () => {
-    const mockBody = { foo: 'bar' };
+  describe('handleWebhook', () => {
+    it('should call queue.add correctly and return correct response', async () => {
+      const mockBody = { foo: 'bar' };
 
-    const result = await controller.handleWebhook(mockBody);
+      const result = await controller.handleWebhook(mockBody);
 
-    expect(videoQueue.add).toHaveBeenCalledWith('process', mockBody);
-    expect(result).toEqual({ message: 'webhook received' });
+      expect(videoQueue.add).toHaveBeenCalledWith('process', mockBody);
+      expect(result).toEqual({ message: 'webhook received' });
+    });
+    it('should propagate errors from the queue', async () => {
+      (videoQueue.add as jest.Mock).mockRejectedValueOnce(
+        new Error('Queue failed'),
+      );
+
+      await expect(controller.handleWebhook({ test: true })).rejects.toThrow(
+        'Queue failed',
+      );
+    });
   });
 });
