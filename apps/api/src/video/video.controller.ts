@@ -49,6 +49,7 @@ export class VideoController {
     const videoId = Date.now();
     await this.videoMetadataModel.create({
       videoId,
+      status: 'uploading',
     });
     const presignedUrl = await this.minioClient.presignedPutObject(
       'streamcore',
