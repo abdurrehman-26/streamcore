@@ -1,4 +1,7 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
+
+export type VideoMetadataDocument = HydratedDocument<VideoMetadata>;
 
 @Schema({ timestamps: true })
 export class VideoMetadata {
@@ -20,3 +23,5 @@ export class VideoMetadata {
   @Prop({ ref: 'User' })
   userId: string;
 }
+
+export const VideoMetadataSchema = SchemaFactory.createForClass(VideoMetadata);
