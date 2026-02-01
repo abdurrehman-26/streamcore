@@ -4,7 +4,7 @@ import { StreamingServiceModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(StreamingServiceModule);
   app.enableCors();
-  await app.listen(process.env.port ?? 3000);
+  await app.listen(process.env.STREAMING_PORT ?? 3001);
 }
 bootstrap()
   .then(() => {
