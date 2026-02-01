@@ -21,6 +21,9 @@ import {
 } from '@nestjs/swagger';
 import { PresignedUrlResponseDto } from './dto/responses/generate-presigned-upload.response';
 import { WebhookResponseDto } from './dto/responses/webhook.response.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { VideoMetadata } from '../schemas/video-metadata.schema';
+import { Model } from 'mongoose';
 
 @ApiTags('Video')
 @Controller('video')
@@ -28,6 +31,8 @@ export class VideoController {
   constructor(
     @InjectQueue('videoProcessing') private videoQueue: Queue,
     @Inject('MINIO_CLIENT') private readonly minioClient: Minio.Client,
+    @InjectModel(VideoMetadata.name)
+    private videoMetadataModel: Model<VideoMetadata>,
   ) {}
   @ApiOperation({
     summary: 'Generate Video Upload URL',
@@ -41,6 +46,10 @@ export class VideoController {
   @HttpCode(HttpStatus.CREATED)
   @Post('generate-upload-url')
   async generateUploadUrl() {
+    const videoId = Date.now();
+    await this.videoMetadataModel.create({
+      videoId,
+    });
     const presignedUrl = await this.minioClient.presignedPutObject(
       'streamcore',
       `raw/video_${Date.now()}.mp4`,
