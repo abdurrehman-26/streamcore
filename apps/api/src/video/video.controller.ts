@@ -24,6 +24,7 @@ import { WebhookResponseDto } from './dto/responses/webhook.response.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { VideoMetadata } from '../schemas/video-metadata.schema';
 import { Model } from 'mongoose';
+import { nanoid } from 'nanoid';
 
 @ApiTags('Video')
 @Controller('video')
@@ -46,14 +47,14 @@ export class VideoController {
   @HttpCode(HttpStatus.CREATED)
   @Post('generate-upload-url')
   async generateUploadUrl() {
-    const videoId = Date.now();
+    const videoId = nanoid(12);
     await this.videoMetadataModel.create({
       videoId,
       status: 'uploading',
     });
     const presignedUrl = await this.minioClient.presignedPutObject(
       'streamcore',
-      `raw/video_${Date.now()}.mp4`,
+      `raw/video_${videoId}.mp4`,
     );
     return { message: 'video upload url generated', url: presignedUrl };
   }
