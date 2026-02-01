@@ -54,7 +54,7 @@ export class VideoController {
     });
     const presignedUrl = await this.minioClient.presignedPutObject(
       'streamcore',
-      `raw/video_${videoId}.mp4`,
+      `raw/${videoId}.mp4`,
     );
     return { message: 'video upload url generated', url: presignedUrl };
   }
