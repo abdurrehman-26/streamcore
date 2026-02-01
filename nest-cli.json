@@ -28,6 +28,15 @@
         "tsConfigPath": "libs/minio/tsconfig.lib.json"
       }
     },
+    "streaming-service": {
+      "type": "application",
+      "root": "apps/streaming-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/streaming-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/streaming-service/tsconfig.app.json"
+      }
+    },
     "video-processing-worker": {
       "type": "application",
       "root": "apps/video-processing-worker",
