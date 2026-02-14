@@ -50,6 +50,8 @@ export class FFmpegService {
       '0',
       '-f',
       'hls',
+      '-hls_segment_filename',
+      join(outputFolder, 'segment%d.ts'),
       `${join(outputFolder, 'index.m3u8')}`,
     ];
 
