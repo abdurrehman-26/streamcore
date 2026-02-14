@@ -71,4 +71,37 @@ export class FFmpegService {
 
     await this.runFFmpeg(args);
   }
+
+  async getResolution(inputPath: string) {
+    const args = [
+      '-v',
+      'error',
+      '-select_streams',
+      'v:0',
+      '-show_entries',
+      'stream=width,height',
+      '-of',
+      'json',
+      '-i',
+      inputPath,
+    ];
+
+    const ffprobe = spawn('ffprobe', args);
+
+    let stdout = '';
+    let stderr = '';
+
+    ffprobe.stdout.on('data', (chunk: Buffer) => (stdout += chunk.toString()));
+    ffprobe.stderr.on('data', (chunk: Buffer) => (stderr += chunk.toString()));
+
+    const exitCode: number = await new Promise((resolve) =>
+      ffprobe.on('close', resolve),
+    );
+
+    if (exitCode !== 0) {
+      throw new Error(`FFprobe failed: ${stderr}`);
+    }
+
+    return stdout;
+  }
 }
