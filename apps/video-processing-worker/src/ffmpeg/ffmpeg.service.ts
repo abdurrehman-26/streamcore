@@ -12,13 +12,13 @@ export class FFmpegService {
 
       const ffmpeg = spawn('ffmpeg', args);
 
-      ffmpeg.stdout.on('data', (data) => {
-        this.logger.debug(data);
+      ffmpeg.stdout.on('data', (data: Buffer) => {
+        this.logger.debug(data.toString());
       });
 
-      ffmpeg.stderr.on('data', (data) => {
+      ffmpeg.stderr.on('data', (data: Buffer) => {
         // FFmpeg logs progress in stderr
-        this.logger.debug(data);
+        this.logger.debug(data.toString());
       });
 
       ffmpeg.on('close', (code) => {
