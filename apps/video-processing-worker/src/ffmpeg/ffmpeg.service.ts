@@ -12,13 +12,13 @@ export class FFmpegService {
 
       const ffmpeg = spawn('ffmpeg', args);
 
-      ffmpeg.stdout.on('data', (data) => {
-        this.logger.debug(data);
+      ffmpeg.stdout.on('data', (data: Buffer) => {
+        this.logger.debug(data.toString());
       });
 
-      ffmpeg.stderr.on('data', (data) => {
+      ffmpeg.stderr.on('data', (data: Buffer) => {
         // FFmpeg logs progress in stderr
-        this.logger.debug(data);
+        this.logger.debug(data.toString());
       });
 
       ffmpeg.on('close', (code) => {
@@ -50,6 +50,8 @@ export class FFmpegService {
       '0',
       '-f',
       'hls',
+      '-hls_segment_filename',
+      join(outputFolder, 'segment%d.ts'),
       `${join(outputFolder, 'index.m3u8')}`,
     ];
 
@@ -68,5 +70,38 @@ export class FFmpegService {
     ];
 
     await this.runFFmpeg(args);
+  }
+
+  async getResolution(inputPath: string) {
+    const args = [
+      '-v',
+      'error',
+      '-select_streams',
+      'v:0',
+      '-show_entries',
+      'stream=width,height',
+      '-of',
+      'json',
+      '-i',
+      inputPath,
+    ];
+
+    const ffprobe = spawn('ffprobe', args);
+
+    let stdout = '';
+    let stderr = '';
+
+    ffprobe.stdout.on('data', (chunk: Buffer) => (stdout += chunk.toString()));
+    ffprobe.stderr.on('data', (chunk: Buffer) => (stderr += chunk.toString()));
+
+    const exitCode: number = await new Promise((resolve) =>
+      ffprobe.on('close', resolve),
+    );
+
+    if (exitCode !== 0) {
+      throw new Error(`FFprobe failed: ${stderr}`);
+    }
+
+    return stdout;
   }
 }

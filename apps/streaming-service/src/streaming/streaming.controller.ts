@@ -2,13 +2,13 @@ import { Controller, Get, Header, Inject, Param, Res } from '@nestjs/common';
 import * as Minio from 'minio';
 import type { Response } from 'express';
 
-@Controller()
+@Controller('video')
 export class StreamingController {
   constructor(
     @Inject('MINIO_CLIENT') private readonly minioClient: Minio.Client,
   ) {}
 
-  @Get('video/:id/master.m3u8')
+  @Get(':id/master.m3u8')
   @Header('Content-Type', 'application/vnd.apple.mpegurl')
   async getmastermanifest(
     @Param('id') id: string,
@@ -16,12 +16,13 @@ export class StreamingController {
   ): Promise<void> {
     const datastream = await this.minioClient.getObject(
       'streamcore',
-      `${id}/master.m3u8`,
+      `videos/${id}/master.m3u8`,
     );
     datastream.pipe(res);
   }
 
-  @Get('/video/:id/:stream_quality/index.m3u8')
+  @Get(':id/:stream_quality/index.m3u8')
+  @Header('Content-Type', 'application/vnd.apple.mpegurl')
   async getmanifest(
     @Param('stream_quality') stream_quality: string,
     @Param('id') id: string,
@@ -29,12 +30,12 @@ export class StreamingController {
   ): Promise<void> {
     const datastream = await this.minioClient.getObject(
       'streamcore',
-      `${id}/${stream_quality}/index.m3u8`,
+      `videos/${id}/${stream_quality}/index.m3u8`,
     );
     datastream.pipe(res);
   }
 
-  @Get('/video/:id/:stream_quality/:segment.ts')
+  @Get(':id/:stream_quality/:segment.ts')
   async getVideoSegment(
     @Param('stream_quality') stream_quality: string,
     @Param('id') id: string,
@@ -43,7 +44,7 @@ export class StreamingController {
   ): Promise<void> {
     const datastream = await this.minioClient.getObject(
       'streamcore',
-      `${id}/${stream_quality}/${segment}.ts`,
+      `videos/${id}/${stream_quality}/${segment}.ts`,
     );
     datastream.pipe(res);
   }
