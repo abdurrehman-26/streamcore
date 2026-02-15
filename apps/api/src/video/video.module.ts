@@ -7,6 +7,7 @@ import {
   VideoMetadata,
   VideoMetadataSchema,
 } from '../schemas/video-metadata.schema';
+import { VideoService } from './video.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import {
     }),
     MinioModule,
   ],
-  providers: [],
+  providers: [VideoService],
   controllers: [VideoController],
 })
 export class VideoModule {}
