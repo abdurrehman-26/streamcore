@@ -27,6 +27,7 @@ import { nanoid } from 'nanoid';
 import { VideoService } from './video.service';
 import { UpdateVideoResponseDto } from './dto/responses/update-video.response.dto';
 import { UpdateVideoDto } from './dto/requests/update-video.request';
+import { RequireBodyPipe } from 'shared/pipes/require-body.pipe';
 
 @ApiTags('Video')
 @Controller('video')
@@ -74,7 +75,7 @@ export class VideoController {
   @Patch(':id')
   async updateVideoData(
     @Param('id') id: string,
-    @Body() videoData: UpdateVideoDto,
+    @Body(new RequireBodyPipe()) videoData: UpdateVideoDto,
   ) {
     return this.videoservice.updateVideo(id, videoData);
   }
