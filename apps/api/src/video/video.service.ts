@@ -16,10 +16,10 @@ export class VideoService {
   ) {}
   async updateVideo(videoId: string, videoData: videoData) {
     const updatevideoData: videoData = {};
-    if (videoData.title) {
+    if (videoData?.title) {
       updatevideoData.title = videoData.title;
     }
-    if (videoData.description) {
+    if (videoData?.description) {
       updatevideoData.description = videoData.description;
     }
     return await this.videoMetadataModel
