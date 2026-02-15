@@ -24,9 +24,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { VideoMetadata } from '../schemas/video-metadata.schema';
 import { Model } from 'mongoose';
 import { nanoid } from 'nanoid';
-import type { videoData } from './video.service';
 import { VideoService } from './video.service';
 import { UpdateVideoResponseDto } from './dto/responses/update-video.response.dto';
+import { UpdateVideoDto } from './dto/requests/update-video.request';
 
 @ApiTags('Video')
 @Controller('video')
@@ -72,7 +72,10 @@ export class VideoController {
     type: UpdateVideoResponseDto,
   })
   @Patch(':id')
-  async updateVideoData(@Param('id') id: string, @Body() videoData: videoData) {
+  async updateVideoData(
+    @Param('id') id: string,
+    @Body() videoData: UpdateVideoDto,
+  ) {
     return this.videoservice.updateVideo(id, videoData);
   }
 
