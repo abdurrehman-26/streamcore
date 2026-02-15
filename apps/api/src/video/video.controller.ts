@@ -6,9 +6,9 @@ import {
   HttpStatus,
   Inject,
   Param,
+  Patch,
   Post,
 } from '@nestjs/common';
-import type { Response } from 'express';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import * as Minio from 'minio';
@@ -24,6 +24,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { VideoMetadata } from '../schemas/video-metadata.schema';
 import { Model } from 'mongoose';
 import { nanoid } from 'nanoid';
+import { VideoService } from './video.service';
+import { UpdateVideoResponseDto } from './dto/responses/update-video.response.dto';
+import { UpdateVideoDto } from './dto/requests/update-video.request';
+import { RequireBodyPipe } from 'shared/pipes/require-body.pipe';
 
 @ApiTags('Video')
 @Controller('video')
@@ -33,6 +37,7 @@ export class VideoController {
     @Inject('MINIO_CLIENT') private readonly minioClient: Minio.Client,
     @InjectModel(VideoMetadata.name)
     private videoMetadataModel: Model<VideoMetadata>,
+    private readonly videoservice: VideoService,
   ) {}
   @ApiOperation({
     summary: 'Generate Video Upload URL',
@@ -56,6 +61,23 @@ export class VideoController {
       `raw/${videoId}.mp4`,
     );
     return { message: 'video upload url generated', url: presignedUrl };
+  }
+
+  @ApiOperation({
+    summary: 'Update video details',
+    description:
+      'This endpoint updates videodata. Requires updated video data in JSON format',
+  })
+  @ApiOkResponse({
+    description: 'Video details updated successfully',
+    type: UpdateVideoResponseDto,
+  })
+  @Patch(':id')
+  async updateVideoData(
+    @Param('id') id: string,
+    @Body(new RequireBodyPipe()) videoData: UpdateVideoDto,
+  ) {
+    return this.videoservice.updateVideo(id, videoData);
   }
 
   @ApiOperation({
