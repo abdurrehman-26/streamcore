@@ -7,7 +7,6 @@ import {
   Inject,
   Param,
   Post,
-  Res,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { Queue } from 'bullmq';
@@ -84,57 +83,13 @@ https://example.com/segment1.ts
   })
   @HttpCode(HttpStatus.OK)
   @Get(':id')
-  async getVideo(@Param('id') id: string, @Res() res: Response) {
-    const bucket = 'streamcore';
-    const folder = `processed/${id}`;
-    const manifestKey = `${folder}/index.m3u8`;
-
-    try {
-      const stream = await this.minioClient.getObject(bucket, manifestKey);
-
-      let manifest = '';
-
-      stream.on('data', (chunk: Buffer) => {
-        manifest += chunk.toString();
-      });
-      const handleStreamEnd = async () => {
-        // Split manifest into lines
-        const lines = manifest.split('\n');
-
-        // Replace .ts lines with presigned URLs
-        const updatedLines = await Promise.all(
-          lines.map(async (line) => {
-            if (line.trim().endsWith('.ts')) {
-              const segmentKey = `${folder}/${line.trim()}`;
-
-              // 10-minute expiry
-              const url = await this.minioClient.presignedGetObject(
-                bucket,
-                segmentKey,
-                600,
-              );
-              return url;
-            }
-            return line;
-          }),
-        );
-
-        res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-        res.send(updatedLines.join('\n'));
-      };
-      stream.on('end', () => {
-        handleStreamEnd().catch((err) => {
-          console.error('Error processing manifest', err);
-        });
-      });
-      stream.on('error', (err) => {
-        console.error('MinIO stream error', err);
-        res.status(500).send('Error reading file');
-      });
-    } catch (err) {
-      console.error('MinIO error', err);
-      res.status(404).send('File not found');
-    }
+  async getVideo(@Param('id') id: string) {
+    const videodata = await this.videoMetadataModel
+      .findOne({
+        videoId: id,
+      })
+      .select('-_id -__v -updatedAt');
+    return videodata;
   }
   @ApiOperation({
     summary: 'Handle Video Processing Webhook',
