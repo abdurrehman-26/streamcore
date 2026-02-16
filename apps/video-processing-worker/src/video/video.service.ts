@@ -6,6 +6,8 @@ import * as Minio from 'minio';
 import { InjectModel } from '@nestjs/mongoose';
 import { VideoMetadata } from 'apps/api/src/schemas/video-metadata.schema';
 import { Model } from 'mongoose';
+import { ConfigService } from '@nestjs/config';
+import { EnvironmentVariables } from 'apps/api/src/types/env';
 
 interface FFprobeStream {
   width: number;
@@ -26,6 +28,7 @@ export class VideoService {
     @Inject('MINIO_CLIENT') private readonly minioClient: Minio.Client,
     @InjectModel(VideoMetadata.name)
     private videoMetadataModel: Model<VideoMetadata>,
+    private configService: ConfigService<EnvironmentVariables>,
   ) {}
 
   async processVideo(bucket: string, objectKey: string): Promise<void> {
@@ -152,6 +155,7 @@ export class VideoService {
       { videoId },
       {
         status: 'ready',
+        manifestURL: `${this.configService.get('STREAMING_SERVICE_URL')}:${this.configService.get('STREAMING_SERVICE_PORT')}/video/${videoId}/master.m3u8`,
       },
     );
 
