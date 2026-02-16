@@ -13,4 +13,6 @@ export interface EnvironmentVariables {
   REDIS_PORT: string;
   JWT_SECRET: string;
   JWT_EXPIRES_IN: string;
+  STREAMING_SERVICE_URL: string;
+  STREAMING_SERVICE_PORT: string;
 }
