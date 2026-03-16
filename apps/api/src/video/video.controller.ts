@@ -21,7 +21,10 @@ import {
 import { PresignedUrlResponseDto } from './dto/responses/generate-presigned-upload.response';
 import { WebhookResponseDto } from './dto/responses/webhook.response.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { VideoMetadata } from '../schemas/video-metadata.schema';
+import {
+  VideoMetadata,
+  VideoMetadataDocument,
+} from '../schemas/video-metadata.schema';
 import { Model } from 'mongoose';
 import { nanoid } from 'nanoid';
 import { VideoService } from './video.service';
@@ -39,6 +42,20 @@ export class VideoController {
     private videoMetadataModel: Model<VideoMetadata>,
     private readonly videoservice: VideoService,
   ) {}
+
+  @ApiOperation({
+    summary: 'Get all videos',
+    description: 'Retrieves metadata for all videos.',
+  })
+  @ApiOkResponse({
+    description: 'Videos retrieved successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  @Get('all')
+  getAllVideos(): Promise<VideoMetadataDocument[]> {
+    return this.videoservice.getAllVideos();
+  }
+
   @ApiOperation({
     summary: 'Generate Video Upload URL',
     description:

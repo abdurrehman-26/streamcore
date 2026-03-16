@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { VideoMetadata } from '../schemas/video-metadata.schema';
+import {
+  VideoMetadata,
+  VideoMetadataDocument,
+} from '../schemas/video-metadata.schema';
 import { Model } from 'mongoose';
 
 export interface videoData {
@@ -14,6 +17,11 @@ export class VideoService {
     @InjectModel(VideoMetadata.name)
     private videoMetadataModel: Model<VideoMetadata>,
   ) {}
+
+  async getAllVideos(): Promise<VideoMetadataDocument[]> {
+    return this.videoMetadataModel.find().select('-_id -__v -updatedAt').exec();
+  }
+
   async updateVideo(videoId: string, videoData: videoData) {
     const updatevideoData: videoData = {};
     if (videoData?.title) {
