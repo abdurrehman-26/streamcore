@@ -15,7 +15,7 @@ import { AuthService } from './auth.service';
 import { LogInDTO } from './dto/requests/login.request.dto';
 import { SignUpDTO } from './dto/requests/signup.request.dto';
 import { EmailVerificationService } from '../email-verification/email-verification.service';
-import { RequestVerificationDto } from './dto//requests/request-verification.request.dto';
+import { RequestVerificationDto } from './dto/requests/request-verification.request.dto';
 import { VerifyEmailDto } from './dto/requests/verify-email.request.dto';
 import {
   ApiCreatedResponse,
@@ -28,6 +28,8 @@ import { LoginResponseDto } from './dto/responses/login.response.dto';
 import { GetProfileResponseDto } from './dto/responses/get-profile.response.dto';
 import { RequestVerificationResponseDto } from './dto/responses/request-verification.response.dto';
 import { VerifyEmailResponseDto } from './dto/responses/verify-email.response.dto';
+import { ConfigService } from '@nestjs/config';
+import { EnvironmentVariables } from '../types/env';
 
 type User = {
   id: string;
@@ -42,8 +44,9 @@ interface AuthenticatedRequest extends ExpressRequest {
 @Controller('auth')
 export class AuthController {
   constructor(
-    private authService: AuthService,
-    private verificationService: EmailVerificationService,
+    private readonly authService: AuthService,
+    private readonly verificationService: EmailVerificationService,
+    private readonly configService: ConfigService<EnvironmentVariables>,
   ) {}
 
   @ApiOperation({
@@ -84,7 +87,12 @@ export class AuthController {
       logInDto.email,
       logInDto.password,
     );
-    res.cookie('access_token', loginData.access_token, { httpOnly: true });
+    res.cookie('access_token', loginData.access_token, {
+      httpOnly: true,
+      secure: true,
+      domain: this.configService.get('STUDIO_DOMAIN'),
+      sameSite: 'none',
+    });
     return loginData;
   }
 

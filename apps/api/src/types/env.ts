@@ -15,4 +15,5 @@ export interface EnvironmentVariables {
   JWT_EXPIRES_IN: string;
   STREAMING_SERVICE_URL: string;
   STREAMING_SERVICE_PORT: string;
+  STUDIO_DOMAIN: string;
 }
