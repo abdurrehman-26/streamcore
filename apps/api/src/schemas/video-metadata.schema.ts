@@ -18,7 +18,10 @@ export class VideoMetadata {
   status: 'uploading' | 'processing' | 'ready';
 
   @Prop()
-  manifestURL: string;
+  manifestId: string;
+
+  @Prop()
+  thumbnailId: string;
 
   @Prop({ ref: 'User' })
   userId: string;
