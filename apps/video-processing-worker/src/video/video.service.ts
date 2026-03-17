@@ -50,6 +50,7 @@ export class VideoService {
         videoId,
       },
       {
+        title: videoId,
         status: 'processing',
       },
     );
@@ -96,7 +97,6 @@ export class VideoService {
         await fs.promises.mkdir(path.join(outputFolder, variant.name), {
           recursive: true,
         });
-        console.log(variant);
         await this.ffmpegService.transcodeToHLS(
           inputPath,
           path.join(outputFolder, variant.name),
@@ -151,11 +151,23 @@ export class VideoService {
 
     this.logger.log('Uploaded master.m3u8');
 
+    await this.ffmpegService.generateThumbnail(
+      inputPath,
+      path.join(outputFolder, 'thumbnail.jpg'),
+    );
+
+    await this.minioClient.fPutObject(
+      bucket,
+      `videos/${videoId}/thumbnail.jpg`,
+      path.join(outputFolder, 'thumbnail.jpg'),
+    );
+
     await this.videoMetadataModel.findOneAndUpdate(
       { videoId },
       {
         status: 'ready',
-        manifestURL: `${this.configService.get('STREAMING_SERVICE_URL')}:${this.configService.get('STREAMING_SERVICE_PORT')}/video/${videoId}/master.m3u8`,
+        thumbnailId: `/videos/${videoId}/thumbnail.jpg`,
+        manifestId: `/video/${videoId}/master.m3u8`,
       },
     );
 
