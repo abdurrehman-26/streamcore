@@ -167,7 +167,7 @@ export class VideoService {
       {
         status: 'ready',
         thumbnailId: `/videos/${videoId}/thumbnail.jpg`,
-        manifestId: `/video/${videoId}/master.m3u8`,
+        manifestId: `/videos/${videoId}/master.m3u8`,
       },
     );
 
