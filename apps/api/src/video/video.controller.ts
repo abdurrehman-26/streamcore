@@ -77,7 +77,11 @@ export class VideoController {
       'streamcore',
       `raw/${videoId}.mp4`,
     );
-    return { message: 'video upload url generated', url: presignedUrl };
+    return {
+      message: 'video upload url generated',
+      url: presignedUrl,
+      videoId,
+    };
   }
 
   @ApiOperation({
