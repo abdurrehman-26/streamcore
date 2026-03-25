@@ -63,7 +63,7 @@ export class VideoService {
     const presignedUrl = await getSignedUrl(this.s3, command, {
       expiresIn: 3600,
     }); // 1 hour
-    return { url: presignedUrl };
+    return { url: presignedUrl, videoId };
   }
 
   async createMultipartVideoUpload() {
