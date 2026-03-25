@@ -4,14 +4,12 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
   Param,
   Patch,
   Post,
 } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
-import * as Minio from 'minio';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
@@ -26,7 +24,6 @@ import {
   VideoMetadataDocument,
 } from '../schemas/video-metadata.schema';
 import { Model } from 'mongoose';
-import { nanoid } from 'nanoid';
 import { VideoService } from './video.service';
 import { UpdateVideoResponseDto } from './dto/responses/update-video.response.dto';
 import { UpdateVideoDto } from './dto/requests/update-video.request';
@@ -37,7 +34,6 @@ import { RequireBodyPipe } from 'shared/pipes/require-body.pipe';
 export class VideoController {
   constructor(
     @InjectQueue('videoProcessing') private videoQueue: Queue,
-    @Inject('MINIO_CLIENT') private readonly minioClient: Minio.Client,
     @InjectModel(VideoMetadata.name)
     private videoMetadataModel: Model<VideoMetadata>,
     private readonly videoservice: VideoService,
@@ -57,31 +53,18 @@ export class VideoController {
   }
 
   @ApiOperation({
-    summary: 'Generate Video Upload URL',
+    summary: 'Create Video Upload URL',
     description:
-      'Generates a presigned URL for uploading a video file to the storage bucket.',
+      'Creates a presigned URL for uploading a video file to the storage bucket.',
   })
   @ApiCreatedResponse({
-    description: 'Presigned URL generated successfully',
+    description: 'Presigned URL created successfully',
     type: PresignedUrlResponseDto,
   })
   @HttpCode(HttpStatus.CREATED)
-  @Post('generate-upload-url')
-  async generateUploadUrl() {
-    const videoId = nanoid(12);
-    await this.videoMetadataModel.create({
-      videoId,
-      status: 'uploading',
-    });
-    const presignedUrl = await this.minioClient.presignedPutObject(
-      'streamcore',
-      `raw/${videoId}.mp4`,
-    );
-    return {
-      message: 'video upload url generated',
-      url: presignedUrl,
-      videoId,
-    };
+  @Post('create-put-upload')
+  async createUploadUrl() {
+    return await this.videoservice.createPutVideoUpload();
   }
 
   @ApiOperation({
