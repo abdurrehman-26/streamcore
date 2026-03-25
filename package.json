@@ -20,6 +20,8 @@
     "test:e2e": "jest --config ./apps/api/test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1015.0",
+    "@aws-sdk/s3-request-presigner": "^3.1015.0",
     "@nestjs/bullmq": "^11.0.4",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
@@ -90,7 +92,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/minio(|/.*)$": "<rootDir>/libs/minio/src/$1"
+      "^@app/minio(|/.*)$": "<rootDir>/libs/minio/src/$1",
+      "^@app/s3(|/.*)$": "<rootDir>/libs/s3/src/$1"
     }
   }
 }
