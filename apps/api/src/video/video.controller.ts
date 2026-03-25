@@ -33,7 +33,7 @@ import { UpdateVideoDto } from './dto/requests/update-video.request';
 import { RequireBodyPipe } from 'shared/pipes/require-body.pipe';
 
 @ApiTags('Video')
-@Controller('video')
+@Controller('videos')
 export class VideoController {
   constructor(
     @InjectQueue('videoProcessing') private videoQueue: Queue,
