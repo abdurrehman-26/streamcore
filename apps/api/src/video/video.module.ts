@@ -8,6 +8,7 @@ import {
   VideoMetadataSchema,
 } from '../schemas/video-metadata.schema';
 import { VideoService } from './video.service';
+import { S3Module } from '@app/s3';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { VideoService } from './video.service';
       name: 'videoProcessing',
     }),
     MinioModule,
+    S3Module,
   ],
   providers: [VideoService],
   controllers: [VideoController],
