@@ -90,8 +90,9 @@ export class AuthController {
     res.cookie('access_token', loginData.access_token, {
       httpOnly: true,
       secure: true,
-      domain: this.configService.get('STUDIO_DOMAIN'),
-      sameSite: 'none',
+      domain: this.configService.get('COOKIE_DOMAIN'),
+      sameSite: 'strict',
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     });
     return loginData;
   }

@@ -15,7 +15,7 @@ export interface EnvironmentVariables {
   JWT_EXPIRES_IN: string;
   STREAMING_SERVICE_URL: string;
   STREAMING_SERVICE_PORT: string;
-  STUDIO_DOMAIN: string;
+  COOKIE_DOMAIN: string;
   S3_ENDPOINT: string;
   S3_ACCESS_KEY: string;
   S3_SECRET_KEY: string;
