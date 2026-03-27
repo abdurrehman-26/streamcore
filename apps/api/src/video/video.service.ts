@@ -85,7 +85,7 @@ export class VideoService {
   async getMultipartVideoUploadUrls(
     key: string,
     uploadId: string,
-    partNumbers: number[],
+    parts: number[],
   ) {
     return await Promise.all(
       partNumbers.map(async (num) => {
