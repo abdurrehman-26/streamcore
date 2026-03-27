@@ -54,6 +54,11 @@ export class VideoService {
   async createPutVideoUpload() {
     const videoId = nanoid(12);
     const key = `raw/${videoId}.mp4`;
+    await this.videoMetadataModel.create({
+      videoId,
+      title: videoId,
+      status: 'uploading',
+    });
     const command = new PutObjectCommand({
       Bucket: 'streamcore',
       Key: key,
@@ -68,6 +73,13 @@ export class VideoService {
 
   async createMultipartVideoUpload() {
     const videoId = nanoid(12);
+
+    await this.videoMetadataModel.create({
+      videoId,
+      title: videoId,
+      status: 'uploading',
+    });
+
     const command = new CreateMultipartUploadCommand({
       Bucket: 'streamcore',
       Key: `uploads/${videoId}.mp4`,
@@ -88,7 +100,7 @@ export class VideoService {
     parts: number[],
   ) {
     return await Promise.all(
-      partNumbers.map(async (num) => {
+      parts.map(async (num) => {
         const command = new UploadPartCommand({
           Bucket: 'streamcore',
           Key: key,
