@@ -67,6 +67,41 @@ export class VideoController {
     return await this.videoservice.createPutVideoUpload();
   }
 
+  @Post('create-multipart-upload')
+  async createMultiPartUpload() {
+    return await this.videoservice.createMultipartVideoUpload();
+  }
+
+  @Post('multipart-upload-urls')
+  async getMultipartUploadUrls(
+    @Body() body: { key: string; uploadId: string; parts: number[] },
+  ) {
+    return this.videoservice.getMultipartVideoUploadUrls(
+      body.key,
+      body.uploadId,
+      body.parts,
+    );
+  }
+
+  @Post('complete-multipart-upload')
+  async CompleteMultipartUpload(
+    @Body()
+    body: {
+      key: string;
+      uploadId: string;
+      parts: {
+        ETag: string;
+        PartNumber: number;
+      }[];
+    },
+  ) {
+    return this.videoservice.completeMultipartVideoUpload(
+      body.key,
+      body.uploadId,
+      body.parts,
+    );
+  }
+
   @ApiOperation({
     summary: 'Update video details',
     description:
