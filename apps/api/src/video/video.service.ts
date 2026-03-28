@@ -82,7 +82,7 @@ export class VideoService {
 
     const command = new CreateMultipartUploadCommand({
       Bucket: 'streamcore',
-      Key: `uploads/${videoId}.mp4`,
+      Key: `raw/${videoId}.mp4`,
       ContentType: 'video/mp4',
     });
 
