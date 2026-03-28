@@ -97,10 +97,10 @@ export class VideoService {
   async getMultipartVideoUploadUrls(
     key: string,
     uploadId: string,
-    parts: number[],
+    partNumbers: number[],
   ) {
     return await Promise.all(
-      parts.map(async (num) => {
+      partNumbers.map(async (num) => {
         const command = new UploadPartCommand({
           Bucket: 'streamcore',
           Key: key,

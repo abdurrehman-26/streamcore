@@ -74,12 +74,12 @@ export class VideoController {
 
   @Post('multipart-upload-urls')
   async getMultipartUploadUrls(
-    @Body() body: { key: string; uploadId: string; parts: number[] },
+    @Body() body: { key: string; uploadId: string; partNumbers: number[] },
   ) {
     return this.videoservice.getMultipartVideoUploadUrls(
       body.key,
       body.uploadId,
-      body.parts,
+      body.partNumbers,
     );
   }
 
