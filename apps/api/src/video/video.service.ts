@@ -89,6 +89,7 @@ export class VideoService {
     const res = await this.s3.send(command);
 
     return {
+      videoId,
       uploadId: res.UploadId,
       key: res.Key,
     };
